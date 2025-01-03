@@ -3,8 +3,11 @@
     <ul class="open-ai__list">
       <li v-for="(item, index) in answers.filter(ele => ele.role !== 'system')" :key="index" :class="[item.role === 'user' ? 'left' : 'right', 'content']">
         <div class="data">
-          {{ item.content }}
-          <img v-if="item.role === 'assistant'" class="img" src="https://cdn.deepseek.com/platform/favicon.png" alt="">
+          <template v-if="item.role === 'user'">{{ item.content }}</template>
+          <template v-else>
+            <Viewer :value="item.content" style="width: 100%" :plugins="plugins"  />
+            <img v-if="item.role === 'assistant'" class="img" src="https://cdn.deepseek.com/platform/favicon.png" alt="">
+          </template>
         </div>
       </li>
     </ul>
@@ -20,6 +23,16 @@
 import OpenAI from "openai";
 import {ref} from 'vue'
 import {ElMessageBox} from 'element-plus'
+
+import "bytemd/dist/index.css";
+import { Viewer } from "@bytemd/vue-next";
+import gfm from "@bytemd/plugin-gfm";
+import highlightSsr from "@bytemd/plugin-highlight-ssr";
+import highlight from "@bytemd/plugin-highlight";
+import gemoji from "@bytemd/plugin-gemoji";
+import "github-markdown-css";
+import "highlight.js/styles/github.css";
+const plugins = [gfm(), highlightSsr(), gemoji()];
 
 const loading = ref(false);
 const openai = new OpenAI({
@@ -63,6 +76,7 @@ const submit = async () => {
 
 .open-ai__list {
   height: 100%;
+  overflow: auto;
 }
 
 .operation {
@@ -104,7 +118,6 @@ const submit = async () => {
 
 .right {
   align-items: flex-end;
-  background: #eaeaea;
   padding: 10px 0;
   border-radius: 8px;
 }
