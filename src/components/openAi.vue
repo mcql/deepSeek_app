@@ -1,7 +1,7 @@
 <template>
-  <section class="open-ai">
+  <section class="open-ai" v-loading="loading">
     <ul class="open-ai__list">
-      <li v-for="(item, index) in answers" :key="index" :class="[item.role === 'user' ? 'left' : 'right', 'content']">
+      <li v-for="(item, index) in answers.filter(ele => ele.role !== 'system')" :key="index" :class="[item.role === 'user' ? 'left' : 'right', 'content']">
         <div class="data">
           {{ item.content }}
           <img v-if="item.role === 'assistant'" class="img" src="https://cdn.deepseek.com/platform/favicon.png" alt="">
@@ -9,7 +9,7 @@
       </li>
     </ul>
     <div class="operation">
-      <el-input type="textarea" v-model="answer" placeholder="请输入问题"/>
+      <el-input type="textarea" v-model="answer" placeholder="请输入问题" @keyup.enter.native="submit" />
       <el-button class="btn" @click="submit">提交</el-button>
     </div>
   </section>
@@ -21,17 +21,22 @@ import OpenAI from "openai";
 import {ref} from 'vue'
 import {ElMessageBox} from 'element-plus'
 
+const loading = ref(false);
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
   apiKey: import.meta.env.VITE_API_KEY,
   dangerouslyAllowBrowser: true
 });
-const answers = ref([])
+const answers = ref([
+  {"role": "system", "content": "你是一位程序员，用户将提供一系列问题，你的回答应当理性化，并以`deepSeek:`开头"},
+])
 const questions = ref('')
 const answer = ref('')
 const submit = async () => {
+  if (!answer.value) return
   answers.value.push({role: 'user', content: answer.value})
   try {
+    loading.value = true
     const completion = await openai.chat.completions.create({
       messages: answers.value,
       model: "deepseek-chat",
@@ -41,6 +46,8 @@ const submit = async () => {
     answer.value = ''
   } catch (error) {
     await ElMessageBox.alert(error)
+  } finally {
+    loading.value = false
   }
 }
 </script>
