@@ -41,7 +41,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true
 });
 const answers = ref([
-  {"role": "system", "content": "你是一位程序员，用户将提供一系列问题，你的回答应当理性化，并以`deepSeek:`开头"},
+  {"role": "system", "content": "你是一位前端程序员，你的回答应当偏向javaScript语言，并以`frontend:`开头"},
 ])
 const questions = ref('')
 const answer = ref('')
