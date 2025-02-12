@@ -1,11 +1,10 @@
 <template>
   <section class="app">
-    <openAiCom />
+    <router-view />
   </section>
 </template>
 
 <script setup>
-import openAiCom from './components/openAi.vue'
 </script>
 
 <style scoped>
