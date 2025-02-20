@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import openAi from '../components/openAi.vue'
+import openAi from './components/openAi.vue'
 </script>
 
 <style scoped>
